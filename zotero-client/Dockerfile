@@ -34,4 +34,8 @@ RUN \
 cd /zotero && \
 npm i
 
+COPY ./entrypoint.sh /entrypoint.sh
+RUN chmod +x /entrypoint.sh
+ENTRYPOINT ["/entrypoint.sh"]
+
 # More info: https://www.zotero.org/support/dev/client_coding/building_the_desktop_app

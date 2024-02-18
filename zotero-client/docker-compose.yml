@@ -2,17 +2,18 @@ version: '3'
 
 services:
 
-  build-zotero-client:
+  linux:
     image: build-zotero-client:latest
     container_name: build-zotero-client
     build:
       context: .
       dockerfile: Dockerfile
-    command: /bin/sh -c "rm -R -f /staging/*/ && /zotero/app/scripts/build_and_run -r && cp -r /zotero/app/staging/* /staging"
     volumes:
-      - ./staging/:/staging:rw
+      - ./zotero/:/zotero:rw
     environment:
       - DISPLAY=${DISPLAY}
+      - PLATFORM=l
+      - DEBUGGER=0
     network_mode: "host"
 
 # More info: https://www.zotero.org/support/dev/client_coding/building_the_desktop_app
