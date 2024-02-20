@@ -1,0 +1,104 @@
+version: '3'
+
+services:
+
+  mysql:
+    image: mysql:8.3.0
+    container_name: mysql
+    command: --default-authentication-plugin=mysql_native_password
+    expose:
+      - 3306
+    environment:
+      - MYSQL_ROOT_PASSWORD=zotero
+    volumes:
+      - ./data/mysql:/var/lib/mysql:rw
+      - ./config/mysql/my.cnf:/etc/my.cnf:ro
+
+  zotero-phpmyadmin:
+    image: phpmyadmin:5.2.1
+    container_name: zotero-phpmyadmin
+    ports:
+      - 3000:80
+    environment:
+      - PMA_HOST=mysql
+    links:
+      - mysql:mysql
+    restart: always
+
+  zotero-elasticsearch:
+    image: docker.elastic.co/elasticsearch/elasticsearch:5.3.0
+    container_name: zotero-elasticsearch
+    environment:
+      - cluster.name=zotero
+      - xpack.security.enabled=false
+
+  zotero-redis:
+     image: redis:7.2.4-alpine
+     container_name: zotero-redis
+
+  zotero-memcached:
+     image: memcached:1.6.23-alpine
+     container_name: zotero-memcached
+
+  zotero-localstack:
+    image: atlassianlabs/localstack
+    container_name: zotero-localstack
+    environment:
+      - SERVICES=sns,sqs,apigateway
+
+  zotero-minio:
+    image: zotero-minio
+    container_name: zotero-minio
+    build:
+      context: ./minio
+    environment:
+      - MINIO_ACCESS_KEY=zotero
+      - MINIO_SECRET_KEY=zoterodocker
+    command: server /data
+
+  zotero-dataserver:
+    image: zotero-dataserver
+    container_name: zotero-dataserver
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "8080:80"
+    volumes:
+      - "./dataserver/:/var/www/zotero:rw"
+      - "./stream-server/:/var/www/zotero/stream-server:rw"
+      - "./tinymce-clean-server/:/var/www/zotero/tinymce-clean-server:rw"
+      - "./config/dataserver/config.inc.php:/var/www/zotero/include/config/config.inc.php:ro"
+      - "./config/dataserver/dbconnect.inc.php:/var/www/zotero/include/config/dbconnect.inc.php:ro"
+      - "./config/stream-server/default.js:/var/www/zotero/stream-server/config/default.js:ro"
+      - "./scripts/:/var/www/zotero/scripts:rw"
+    environment:
+      - RUN_USER=www-data
+      - RUN_GROUP=www-data
+    depends_on:
+      - mysql
+      - zotero-elasticsearch
+      - zotero-redis
+      - zotero-memcached 
+    links:
+      - mysql:mysql
+      - zotero-elasticsearch:elasticsearch
+      - zotero-redis:redis
+      - zotero-memcached:memcached
+      - zotero-localstack:localstack
+      - zotero-minio:minio
+    restart: always
+
+  mysql-init:
+    image: zotero-dataserver
+    container_name: zotero-init
+    entrypoint: /init-mysql.sh
+    environment:
+      - MYSQL_PWD=zotero
+    volumes:
+      - ./dataserver/:/var/www/zotero:rw
+      - ./init/init-mysql.sh:/init-mysql.sh
+    depends_on:
+      - mysql
+    links:
+      - mysql:mysql
