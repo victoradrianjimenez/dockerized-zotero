@@ -56,6 +56,14 @@ services:
       - MINIO_SECRET_KEY=zoterodocker
     command: server /data
 
+  zotero-stream-server:
+    image: zotero-stream-server
+    container_name: zotero-stream-server
+    build:
+      context: ./stream-server
+    volumes:
+      - ./stream-server/config/default.js:/stream-server/config/default.js:ro
+
   zotero-dataserver:
     image: zotero-dataserver
     container_name: zotero-dataserver
@@ -66,11 +74,9 @@ services:
       - "8080:80"
     volumes:
       - "./dataserver/:/var/www/zotero:rw"
-      - "./stream-server/:/var/www/zotero/stream-server:rw"
       - "./tinymce-clean-server/:/var/www/zotero/tinymce-clean-server:rw"
       - "./config/dataserver/config.inc.php:/var/www/zotero/include/config/config.inc.php:ro"
       - "./config/dataserver/dbconnect.inc.php:/var/www/zotero/include/config/dbconnect.inc.php:ro"
-      - "./config/stream-server/default.js:/var/www/zotero/stream-server/config/default.js:ro"
       - "./scripts/:/var/www/zotero/scripts:rw"
     environment:
       - RUN_USER=www-data
@@ -79,7 +85,8 @@ services:
       - zotero-mysql
       - zotero-elasticsearch
       - zotero-redis
-      - zotero-memcached 
+      - zotero-memcached
+      - zotero-stream-server
     links:
       - zotero-mysql:mysql
       - zotero-elasticsearch:elasticsearch
@@ -87,6 +94,7 @@ services:
       - zotero-memcached:memcached
       - zotero-localstack:localstack
       - zotero-minio:minio
+      - zotero-stream-server:stream-server
     restart: always
 
   mysql-init:
