@@ -118,7 +118,7 @@ services:
       - MYSQL_PWD=zotero
     volumes:
       - ./dataserver/dataserver/:/var/www/zotero:rw
-      - ./init/init-mysql.sh:/init-mysql.sh
+      - ./dataserver/scripts/init-mysql.sh:/init-mysql.sh
     depends_on:
       - zotero-mysql
     links:
