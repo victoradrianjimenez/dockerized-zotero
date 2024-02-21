@@ -86,7 +86,7 @@ class Z_CONFIG {
 	public static $LOG_TIMEZONE = 'US/Eastern';
 	public static $LOG_TARGET_DEFAULT = 'errors';
 	
-	public static $HTMLCLEAN_SERVER_URL = 'http://localhost:16342';
+	public static $HTMLCLEAN_SERVER_URL = 'http://tinymce-clean-server:16342';
 		
 	public static $PROCESSOR_PORT_DOWNLOAD = 3455;  // old
 	public static $PROCESSOR_PORT_UPLOAD = 3456;  // old

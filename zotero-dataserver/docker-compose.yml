@@ -5,14 +5,14 @@ services:
   zotero-mysql:
     image: mysql:8.3.0
     container_name: zotero-mysql
-    command: --default-authentication-plugin=mysql_native_password
+    # command: --default-authentication-plugin=mysql_native_password
     expose:
       - 3306
     environment:
       - MYSQL_ROOT_PASSWORD=zotero
     volumes:
-      - ./data/mysql:/var/lib/mysql:rw
-      - ./config/mysql/my.cnf:/etc/my.cnf:ro
+      - ./mysql/data:/var/lib/mysql:rw
+      - ./mysql/config/my.cnf:/etc/my.cnf:ro
 
   zotero-phpmyadmin:
     image: phpmyadmin:5.2.1
@@ -21,6 +21,8 @@ services:
       - 3000:80
     environment:
       - PMA_HOST=mysql
+    depends_on:
+      - zotero-mysql
     links:
       - zotero-mysql:mysql
     restart: always
@@ -35,6 +37,7 @@ services:
   zotero-redis:
      image: redis:7.2.4-alpine
      container_name: zotero-redis
+     restart: always
 
   zotero-memcached:
      image: memcached:1.6.23-alpine
@@ -63,30 +66,39 @@ services:
       context: ./stream-server
     volumes:
       - ./stream-server/config/default.js:/stream-server/config/default.js:ro
+    depends_on:
+      - zotero-redis
+    links:
+      - zotero-redis:redis
+
+  zotero-tinymce-clean-server:
+    image: zotero-tinymce-clean-server
+    container_name: zotero-tinymce-clean-server
+    build:
+      context: ./tinymce-clean-server
 
   zotero-dataserver:
     image: zotero-dataserver
     container_name: zotero-dataserver
     build:
-      context: .
+      context: ./dataserver
       dockerfile: Dockerfile
     ports:
-      - "8080:80"
+      - 8080:80
     volumes:
-      - "./dataserver/:/var/www/zotero:rw"
-      - "./tinymce-clean-server/:/var/www/zotero/tinymce-clean-server:rw"
-      - "./config/dataserver/config.inc.php:/var/www/zotero/include/config/config.inc.php:ro"
-      - "./config/dataserver/dbconnect.inc.php:/var/www/zotero/include/config/dbconnect.inc.php:ro"
-      - "./scripts/:/var/www/zotero/scripts:rw"
+      - ./dataserver/dataserver/:/var/www/zotero:rw
+      - ./dataserver/config/config.inc.php:/var/www/zotero/include/config/config.inc.php:ro
+      - ./dataserver/config/dbconnect.inc.php:/var/www/zotero/include/config/dbconnect.inc.php:ro
     environment:
-      - RUN_USER=www-data
-      - RUN_GROUP=www-data
+      - APACHE_RUN_USER=www-data
+      - APACHE_RUN_GROUP=www-data
     depends_on:
       - zotero-mysql
       - zotero-elasticsearch
       - zotero-redis
       - zotero-memcached
       - zotero-stream-server
+      - zotero-tinymce-clean-server
     links:
       - zotero-mysql:mysql
       - zotero-elasticsearch:elasticsearch
@@ -95,6 +107,7 @@ services:
       - zotero-localstack:localstack
       - zotero-minio:minio
       - zotero-stream-server:stream-server
+      - zotero-tinymce-clean-server:tinymce-clean-server
     restart: always
 
   mysql-init:
@@ -104,7 +117,7 @@ services:
     environment:
       - MYSQL_PWD=zotero
     volumes:
-      - ./dataserver/:/var/www/zotero:rw
+      - ./dataserver/dataserver/:/var/www/zotero:rw
       - ./init/init-mysql.sh:/init-mysql.sh
     depends_on:
       - zotero-mysql

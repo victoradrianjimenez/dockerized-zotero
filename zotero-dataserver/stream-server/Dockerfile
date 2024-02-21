@@ -9,7 +9,7 @@ RUN cp /lib64/ld-linux-x86-64.so.2 /lib
 WORKDIR /stream-server
 COPY ./stream-server .
 RUN npm install --quiet
-CMD nodejs index.js
 
 EXPOSE 81
 
+CMD ["nodejs", "index.js"]
