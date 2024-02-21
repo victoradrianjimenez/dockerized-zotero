@@ -20,13 +20,11 @@ $ cd zotero-dataserver
 $ chmod +x init.sh
 $ ./init.sh
 ```
-
 _Note_: The zotero source code is cloned from the following official repositories:
 - [Zotero / dataserver](https://github.com/zotero/dataserver.git)
 - [Zotero / stream-server](https://github.com/zotero/stream-server.git)
 - [Zotero / tinymce-clean-server](https://github.com/zotero/tinymce-clean-server.git)
 - [ZendFramework / zf1](https://github.com/zotero/tinymce-clean-server.git)
-
 
 ### Run Data Server
 
@@ -87,3 +85,20 @@ $ ./staging/Zotero_VERSION/zotero(.exe)
 | Zotero        | admin                    | admin              |
 
 [comment]: ![Sync](./doc/sync.png)
+
+
+## Additional configuration: 
+
+1. Elasticsearch uses a _mmapfs_ directory by default to store its indices. The default operating system limits on mmap counts is likely to be too low, which may result in out of memory exceptions. On Linux, you can increase the limits by running the following command as root:
+
+```bash
+$ sudo sysctl -w vm.max_map_count=262144
+```
+
+To set this value permanently, update the _vm.max_map_count_ setting in _/etc/sysctl.conf_:
+
+```bash
+$ sudo echo "vm.max_map_count=262144" >> /etc/sysctl.conf
+```
+
+More info: [Elasticsearch Reference](https://www.elastic.co/guide/en/elasticsearch/reference/current/vm-max-map-count.html#vm-max-map-count)

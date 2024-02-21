@@ -7,6 +7,7 @@ ZOTERO_CONFIG_FILE="$ROOT_DIR/resource/config.js"
 
 # get source code (last version)
 git config --global --add safe.directory $ROOT_DIR
+git config --global http.postBuffer 1073741824
 if [ -d "$ROOT_DIR/.git" ]; then
 	cd $ROOT_DIR
 	git reset --hard origin/main

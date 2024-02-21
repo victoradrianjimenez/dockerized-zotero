@@ -2,9 +2,9 @@ version: '3'
 
 services:
 
-  mysql:
+  zotero-mysql:
     image: mysql:8.3.0
-    container_name: mysql
+    container_name: zotero-mysql
     command: --default-authentication-plugin=mysql_native_password
     expose:
       - 3306
@@ -22,7 +22,7 @@ services:
     environment:
       - PMA_HOST=mysql
     links:
-      - mysql:mysql
+      - zotero-mysql:mysql
     restart: always
 
   zotero-elasticsearch:
@@ -76,12 +76,12 @@ services:
       - RUN_USER=www-data
       - RUN_GROUP=www-data
     depends_on:
-      - mysql
+      - zotero-mysql
       - zotero-elasticsearch
       - zotero-redis
       - zotero-memcached 
     links:
-      - mysql:mysql
+      - zotero-mysql:mysql
       - zotero-elasticsearch:elasticsearch
       - zotero-redis:redis
       - zotero-memcached:memcached
@@ -99,6 +99,6 @@ services:
       - ./dataserver/:/var/www/zotero:rw
       - ./init/init-mysql.sh:/init-mysql.sh
     depends_on:
-      - mysql
+      - zotero-mysql
     links:
-      - mysql:mysql
+      - zotero-mysql:mysql
