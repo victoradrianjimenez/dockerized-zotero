@@ -2,7 +2,8 @@ version: '3'
 
 services:
 
-  linux:
+  build-zotero-client:
+    &build-zotero-client
     image: build-zotero-client:latest
     container_name: build-zotero-client
     build:
@@ -15,5 +16,23 @@ services:
       - PLATFORM=l
       - DEBUGGER=0
     network_mode: "host"
+
+  linux:
+    <<: *build-zotero-client
+    container_name: build-zotero-client-linux
+    environment:
+      - PLATFORM=l
+
+  windows:
+    <<: *build-zotero-client
+    container_name: build-zotero-client-windows
+    environment:
+      - PLATFORM=w
+
+  mac:
+    <<: *build-zotero-client
+    container_name: build-zotero-client-mac
+    environment:
+      - PLATFORM=m
 
 # More info: https://www.zotero.org/support/dev/client_coding/building_the_desktop_app
