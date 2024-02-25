@@ -8,19 +8,31 @@ Before use, make sure you have Docker installed. For instructions on how to inst
 
 ### Initial configuration 
 
-1. Elasticsearch uses a _mmapfs_ directory by default to store its indices. The default operating system limits on mmap counts is likely to be too low, which may result in out of memory exceptions. On Linux, you can increase the limits by running the following command as root:
+- Elasticsearch uses a _mmapfs_ directory by default to store its indices. The default operating system limits on mmap counts is likely to be too low, which may result in out of memory exceptions. On Linux, you can increase the limits by running the following command as root:
 
-```bash
-$ sudo sysctl -w vm.max_map_count=262144
-```
+    ```bash
+    $ sudo sysctl -w vm.max_map_count=262144
+    ```
 
-To set this value permanently, update the _vm.max_map_count_ setting in _/etc/sysctl.conf_:
+    To set this value permanently, update the _vm.max_map_count_ setting in _/etc/sysctl.conf_:
 
-```bash
-$ sudo echo "vm.max_map_count=262144" >> /etc/sysctl.conf
-```
+    ```bash
+    $ sudo echo "vm.max_map_count=262144" >> /etc/sysctl.conf
+    ```
 
-More info: [Elasticsearch Reference](https://www.elastic.co/guide/en/elasticsearch/reference/current/vm-max-map-count.html#vm-max-map-count)
+    More info: [Elasticsearch reference](https://www.elastic.co/guide/en/elasticsearch/reference/current/vm-max-map-count.html#vm-max-map-count)
+
+- Redis service requires to enable the memory overcommit configuration in host machine. Without it, a background save or replication may fail under low memory condition. To fix this issue run the following command as root:
+    ```bash
+    $ sudo sysctl -w vm.overcommit_memory=1
+    ```
+
+    To set this value permanently, add _vm.overcommit_memory = 1_ to _/etc/sysctl.conf_ file:
+
+    ```bash
+    $ sudo echo "vm.overcommit_memory=1" >> /etc/sysctl.conf
+    ```
+    More info: [Redis warning discussion](https://github.com/nextcloud/all-in-one/discussions/1731)
 
 
 ### Run Data Server
@@ -53,10 +65,12 @@ $ sudo docker compose up -d
 
 Build Zotero Desktop App: 
 ```bash
-$ sudo docker compose --profile build up [linux|windows]
+$ sudo docker compose --profile client up [linux|windows]
 ```
 
 The build will be placed in the _/client/zotero/app/staging_ folder in unpackaged form. The new files will be copied in this folder after finishing the compilation and closing zotero.
+
+The source code is downloaded when the docker image is created. It is compiled when the container is created. Therefore, to check and download a new version of zotero, it is necessary to use the above command with the _--build_ option to recreate the image and then compile in a new container.
 
 ### First usage
 
