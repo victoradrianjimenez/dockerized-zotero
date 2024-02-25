@@ -1,0 +1,162 @@
+version: '3'
+
+services:
+
+  zotero-mysql:
+    image: mysql:8.3.0
+    container_name: zotero-mysql
+    # command: --default-authentication-plugin=mysql_native_password
+    expose:
+      - 3306
+    environment:
+      - MYSQL_ROOT_PASSWORD=zotero
+    volumes:
+      - ./mysql/data:/var/lib/mysql:rw
+      - ./mysql/config/my.cnf:/etc/my.cnf:ro
+
+  zotero-phpmyadmin:
+    image: phpmyadmin:5.2.1
+    container_name: zotero-phpmyadmin
+    ports:
+      - 3000:80
+    environment:
+      - PMA_HOST=mysql
+    depends_on:
+      - zotero-mysql
+    links:
+      - zotero-mysql:mysql
+    restart: always
+
+  zotero-elasticsearch:
+    image: docker.elastic.co/elasticsearch/elasticsearch:5.3.0
+    container_name: zotero-elasticsearch
+    environment:
+      - cluster.name=zotero
+      - xpack.security.enabled=false
+
+  zotero-redis:
+     image: redis:7.2.4-alpine
+     container_name: zotero-redis
+     restart: always
+
+  zotero-memcached:
+     image: memcached:1.6.23-alpine
+     container_name: zotero-memcached
+
+  zotero-localstack:
+    image: atlassianlabs/localstack
+    container_name: zotero-localstack
+    environment:
+      - SERVICES=sns,sqs,apigateway
+
+  zotero-minio:
+    image: zotero-minio
+    container_name: zotero-minio
+    build:
+      context: ./minio
+    environment:
+      - MINIO_ACCESS_KEY=zotero
+      - MINIO_SECRET_KEY=zoterodocker
+    command: server /data
+
+  zotero-stream-server:
+    image: zotero-stream-server
+    container_name: zotero-stream-server
+    build:
+      context: ./stream-server
+    volumes:
+      - ./stream-server/config/default.js:/stream-server/config/default.js:ro
+    depends_on:
+      - zotero-redis
+    links:
+      - zotero-redis:redis
+
+  zotero-tinymce-clean-server:
+    image: zotero-tinymce-clean-server
+    container_name: zotero-tinymce-clean-server
+    build:
+      context: ./tinymce-clean-server
+
+  zotero-dataserver:
+    image: zotero-dataserver
+    container_name: zotero-dataserver
+    build:
+      context: ./dataserver
+      dockerfile: Dockerfile
+    ports:
+      - ${DATASERVER_PORT}:80
+    volumes:
+      - ./dataserver/dataserver/:/var/www/zotero:rw
+      - ./dataserver/config/config.inc.php:/var/www/zotero/include/config/config.inc.php:ro
+      - ./dataserver/config/dbconnect.inc.php:/var/www/zotero/include/config/dbconnect.inc.php:ro
+    environment:
+      - APACHE_RUN_USER=www-data
+      - APACHE_RUN_GROUP=www-data
+    depends_on:
+      - zotero-mysql
+      - zotero-elasticsearch
+      - zotero-redis
+      - zotero-memcached
+      - zotero-stream-server
+      - zotero-tinymce-clean-server
+    links:
+      - zotero-mysql:mysql
+      - zotero-elasticsearch:elasticsearch
+      - zotero-redis:redis
+      - zotero-memcached:memcached
+      - zotero-localstack:localstack
+      - zotero-minio:minio
+      - zotero-stream-server:stream-server
+      - zotero-tinymce-clean-server:tinymce-clean-server
+    restart: always
+
+  mysql-init:
+    image: zotero-dataserver
+    container_name: zotero-init
+    entrypoint: /init-mysql.sh
+    environment:
+      - MYSQL_PWD=zotero
+    volumes:
+      - ./dataserver/dataserver/:/var/www/zotero:rw
+      - ./dataserver/scripts/init-mysql.sh:/init-mysql.sh
+    depends_on:
+      - zotero-mysql
+    links:
+      - zotero-mysql:mysql
+
+  build-zotero-client:
+    &build-zotero-client
+    profiles: [none]
+    image: build-zotero-client:latest
+    container_name: build-zotero-client
+    build:
+      context: ./client
+      dockerfile: Dockerfile
+    volumes:
+      - ./client/zotero/:/zotero:rw
+    env_file: ./.env
+    environment:
+      - PLATFORM=l
+    network_mode: "host"
+    # More info: https://www.zotero.org/support/dev/client_coding/building_the_desktop_app
+
+  linux:
+    <<: *build-zotero-client
+    profiles: [build]
+    container_name: build-zotero-client-linux
+    environment:
+      - PLATFORM=l
+
+  windows:
+    <<: *build-zotero-client
+    profiles: [build]
+    container_name: build-zotero-client-windows
+    environment:
+      - PLATFORM=w
+
+  mac:
+    <<: *build-zotero-client
+    profiles: [build]
+    container_name: build-zotero-client-mac
+    environment:
+      - PLATFORM=m
