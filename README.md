@@ -6,34 +6,26 @@ Before use, make sure you have Docker installed. For instructions on how to inst
 
 ## Zotero Server 
 
-### Initialize
+### Initial configuration 
 
-As a first step, it is necessary to download the zotero source code and its dependencies. Next, we need to initialize the database and configure the server parameters. 
+1. Elasticsearch uses a _mmapfs_ directory by default to store its indices. The default operating system limits on mmap counts is likely to be too low, which may result in out of memory exceptions. On Linux, you can increase the limits by running the following command as root:
 
-1. Change to the zotero data server folder: 
 ```bash
-$ cd zotero-dataserver
+$ sudo sysctl -w vm.max_map_count=262144
 ```
 
-2. Download souce code and configure the server: 
+To set this value permanently, update the _vm.max_map_count_ setting in _/etc/sysctl.conf_:
+
 ```bash
-$ chmod +x init.sh
-$ ./init.sh
+$ sudo echo "vm.max_map_count=262144" >> /etc/sysctl.conf
 ```
-_Note_: The zotero source code is cloned from the following official repositories:
-- [Zotero / dataserver](https://github.com/zotero/dataserver.git)
-- [Zotero / stream-server](https://github.com/zotero/stream-server.git)
-- [Zotero / tinymce-clean-server](https://github.com/zotero/tinymce-clean-server.git)
-- [ZendFramework / zf1](https://github.com/zotero/tinymce-clean-server.git)
+
+More info: [Elasticsearch Reference](https://www.elastic.co/guide/en/elasticsearch/reference/current/vm-max-map-count.html#vm-max-map-count)
+
 
 ### Run Data Server
 
-1. Change to the zotero data server folder: 
-```bash
-$ cd zotero-dataserver
-```
-
-2. Download souce code and configure the server: 
+Download souce code and configure the server: 
 ```bash
 $ sudo docker compose up -d
 ```
@@ -59,17 +51,12 @@ $ sudo docker compose up -d
 
 ### Build
 
-1. Change to the zotero client folder: 
+Build Zotero Desktop App: 
 ```bash
-$ cd zotero-client
+$ sudo docker compose --profile build up [linux|windows]
 ```
 
-2. Build and run Zotero: 
-```bash
-$ sudo docker compose up [linux|windows]
-```
-
-The build will be placed in the _./zotero/app/staging_ folder in unpackaged form. The new files will be copied in this folder after finishing the compilation and closing zotero.
+The build will be placed in the _/client/zotero/app/staging_ folder in unpackaged form. The new files will be copied in this folder after finishing the compilation and closing zotero.
 
 ### First usage
 
@@ -86,19 +73,3 @@ $ ./staging/Zotero_VERSION/zotero(.exe)
 
 [comment]: ![Sync](./doc/sync.png)
 
-
-## Additional configuration: 
-
-1. Elasticsearch uses a _mmapfs_ directory by default to store its indices. The default operating system limits on mmap counts is likely to be too low, which may result in out of memory exceptions. On Linux, you can increase the limits by running the following command as root:
-
-```bash
-$ sudo sysctl -w vm.max_map_count=262144
-```
-
-To set this value permanently, update the _vm.max_map_count_ setting in _/etc/sysctl.conf_:
-
-```bash
-$ sudo echo "vm.max_map_count=262144" >> /etc/sysctl.conf
-```
-
-More info: [Elasticsearch Reference](https://www.elastic.co/guide/en/elasticsearch/reference/current/vm-max-map-count.html#vm-max-map-count)
