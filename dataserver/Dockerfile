@@ -53,6 +53,12 @@ a2dissite 000-default && \
 a2ensite zotero && \
 a2enconf gzip
 
+# Install AWS client
+RUN \
+curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip" && \
+unzip awscliv2.zip && \
+./aws/install
+
 # AWS local credentials
 RUN \
 mkdir ~/.aws && \
@@ -65,12 +71,7 @@ RUN echo "0.0.0.0		8082		minio		9000" >> /etc/rinetd.conf
 # HTTP_Request2
 # RUN DEBIAN_FRONTEND=noninteractive pear install HTTP_Request2
 
-# Copy files
-COPY ./entrypoint.sh /
-RUN chmod +x /entrypoint.sh
-# COPY ./dataserver /var/www/zotero 
-
-WORKDIR /var/www/zotero
+WORKDIR /zotero
 RUN \
 git clone https://github.com/zotero/dataserver.git . && \
 git clone https://github.com/zendframework/zf1.git /zf1 && \
@@ -78,11 +79,11 @@ mv -f /zf1/library/Zend/* ./include/Zend && \
 rm -r -f /zf1
 
 # Composer
-RUN \
-cd /var/www/zotero && \
-composer install
+RUN composer install
 
-# VOLUME /var/www/zotero
+# Copy files
+COPY ./entrypoint.sh /
+RUN chmod +x /entrypoint.sh
 
 # Expose and entrypoint
 EXPOSE 80/TCP

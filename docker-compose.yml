@@ -13,10 +13,12 @@ services:
     volumes:
       - ./mysql/data:/var/lib/mysql:rw
       - ./mysql/config/my.cnf:/etc/my.cnf:ro
+    restart: always
 
   zotero-phpmyadmin:
     image: phpmyadmin:5.2.1
     container_name: zotero-phpmyadmin
+    hostname: localhost.localdomain
     ports:
       - 3000:80
     environment:
@@ -33,6 +35,7 @@ services:
     environment:
       - cluster.name=zotero
       - xpack.security.enabled=false
+    restart: always
 
   zotero-redis:
      image: redis:7.2.4-alpine
@@ -42,12 +45,14 @@ services:
   zotero-memcached:
      image: memcached:1.6.23-alpine
      container_name: zotero-memcached
+     restart: always
 
   zotero-localstack:
     image: atlassianlabs/localstack
     container_name: zotero-localstack
     environment:
       - SERVICES=sns,sqs,apigateway
+    restart: always
 
   zotero-minio:
     image: zotero-minio
@@ -58,6 +63,7 @@ services:
       - MINIO_ACCESS_KEY=zotero
       - MINIO_SECRET_KEY=zoterodocker
     command: server /data
+    restart: always
 
   zotero-stream-server:
     image: zotero-stream-server
@@ -70,12 +76,14 @@ services:
       - zotero-redis
     links:
       - zotero-redis:redis
+    restart: always
 
   zotero-tinymce-clean-server:
     image: zotero-tinymce-clean-server
     container_name: zotero-tinymce-clean-server
     build:
       context: ./tinymce-clean-server
+    restart: always
 
   zotero-dataserver:
     image: zotero-dataserver
@@ -83,12 +91,13 @@ services:
     build:
       context: ./dataserver
       dockerfile: Dockerfile
+    hostname: localhost.localdomain
     ports:
       - ${DATASERVER_PORT}:80
     volumes:
       - ./dataserver/dataserver/:/var/www/zotero:rw
-      - ./dataserver/config/config.inc.php:/var/www/zotero/include/config/config.inc.php:ro
-      - ./dataserver/config/dbconnect.inc.php:/var/www/zotero/include/config/dbconnect.inc.php:ro
+      - ./dataserver/config/config.inc.php:/zotero/include/config/config.inc.php:ro
+      - ./dataserver/config/dbconnect.inc.php:/zotero/include/config/dbconnect.inc.php:ro
     environment:
       - APACHE_RUN_USER=www-data
       - APACHE_RUN_GROUP=www-data
@@ -142,21 +151,21 @@ services:
 
   linux:
     <<: *build-zotero-client
-    profiles: [build]
+    profiles: [client]
     container_name: build-zotero-client-linux
     environment:
       - PLATFORM=l
 
   windows:
     <<: *build-zotero-client
-    profiles: [build]
+    profiles: [client]
     container_name: build-zotero-client-windows
     environment:
       - PLATFORM=w
 
   mac:
     <<: *build-zotero-client
-    profiles: [build]
+    profiles: [client]
     container_name: build-zotero-client-mac
     environment:
       - PLATFORM=m

@@ -10,18 +10,7 @@ export APACHE_LOG_DIR=/var/log/apache2
 
 ROOT_DIR=/var/www/zotero
 
-# get source code (last version)
-if [ -d "$ROOT_DIR/.git" ]; then
-	cd $ROOT_DIR
-	rm -r -f "./.git/index.lock"
-	git reset --hard origin/main
-	git pull origin main
-else
-	# Get code from repositories
-	rm -r -f "$ROOT_DIR/*"
-	git clone https://github.com/zotero/dataserver.git "$ROOT_DIR"
-	cd $ROOT_DIR
-fi
+cp -r -f /zotero/{.,}* "$ROOT_DIR/"
 
 # Start log
 # /etc/init.d/rsyslog start
