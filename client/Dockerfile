@@ -6,8 +6,9 @@ apk upgrade --no-cache && \
 apk add --no-cache bash git git-lfs python3 rsync openssl perl zip curl p7zip binutils && \
 apk add --no-cache --upgrade grep
 
-COPY ./entrypoint.sh /entrypoint.sh
-RUN chmod +x /entrypoint.sh
+COPY ./init.sh ./entrypoint.sh /
+RUN chmod +x /entrypoint.sh /init.sh
+RUN /init.sh
 
 ENTRYPOINT ["/bin/bash", "-c", "/entrypoint.sh"]
 
