@@ -128,6 +128,7 @@ services:
     volumes:
       - ./dataserver/dataserver/:/var/www/zotero:rw
       - ./dataserver/scripts/init-mysql.sh:/init-mysql.sh
+      - ./dataserver/scripts/www.sql:/var/www/zotero/misc/www.sql:ro
     depends_on:
       - zotero-mysql
     links:
