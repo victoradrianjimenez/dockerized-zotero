@@ -6,9 +6,9 @@ apk upgrade --no-cache && \
 apk add --no-cache bash git git-lfs python3 rsync openssl perl zip curl p7zip binutils && \
 apk add --no-cache --upgrade grep
 
-COPY ./init.sh ./entrypoint.sh /
-RUN chmod +x /entrypoint.sh /init.sh
-RUN /init.sh
+COPY ./entrypoint.sh /
+RUN chmod +x /entrypoint.sh
+RUN git clone --recursive https://github.com/zotero/zotero app
 
 ENTRYPOINT ["/bin/bash", "-c", "/entrypoint.sh"]
 
