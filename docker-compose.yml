@@ -101,6 +101,7 @@ services:
     environment:
       - APACHE_RUN_USER=www-data
       - APACHE_RUN_GROUP=www-data
+      - MYSQL_PWD=zotero
     depends_on:
       - zotero-mysql
       - zotero-elasticsearch

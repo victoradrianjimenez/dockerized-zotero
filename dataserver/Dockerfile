@@ -82,8 +82,8 @@ rm -r -f /zf1
 RUN composer install
 
 # Copy files
-COPY ./entrypoint.sh /
-RUN chmod +x /entrypoint.sh
+COPY ./entrypoint.sh ./scripts/create-user.sh /
+RUN chmod +x /entrypoint.sh /create-user.sh
 
 # Expose and entrypoint
 EXPOSE 80/TCP
