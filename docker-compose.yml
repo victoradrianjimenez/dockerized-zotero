@@ -122,7 +122,7 @@ services:
   mysql-init:
     image: zotero-dataserver
     container_name: zotero-init
-    entrypoint: /init-mysql.sh
+    entrypoint: [ "bash", "-c", "sleep 10 && /init-mysql.sh"]
     environment:
       - MYSQL_PWD=zotero
     volumes:
