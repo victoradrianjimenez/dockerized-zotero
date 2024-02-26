@@ -1,0 +1,44 @@
+version: '3'
+
+services:
+
+  linux:
+    image: build-zotero-client:latest
+    container_name: build-zotero-client-linux
+    build:
+      context: .
+      dockerfile: Dockerfile
+    volumes:
+      - ./zotero/:/zotero:rw
+    env_file: ../.env
+    environment:
+      - PLATFORM=l
+    network_mode: "host"
+
+  windows:
+    image: build-zotero-client:latest
+    container_name: build-zotero-client-windows
+    build:
+      context: .
+      dockerfile: Dockerfile
+    volumes:
+      - ./zotero/:/zotero:rw
+    env_file: ../.env
+    environment:
+      - PLATFORM=w
+    network_mode: "host"
+
+  mac:
+    image: build-zotero-client:latest
+    container_name: build-zotero-client-mac
+    build:
+      context: .
+      dockerfile: Dockerfile
+    volumes:
+      - ./zotero/:/zotero:rw
+    env_file: ../.env
+    environment:
+      - PLATFORM=m
+    network_mode: "host"
+
+  # More info: https://www.zotero.org/support/dev/client_coding/building_the_desktop_app

@@ -20,7 +20,7 @@ services:
     container_name: zotero-phpmyadmin
     hostname: localhost.localdomain
     ports:
-      - 3000:80
+      - ${PHPMYADMIN_PORT}:80
     environment:
       - PMA_HOST=mysql
     depends_on:
@@ -132,40 +132,3 @@ services:
       - zotero-mysql
     links:
       - zotero-mysql:mysql
-
-  build-zotero-client:
-    &build-zotero-client
-    profiles: [none]
-    image: build-zotero-client:latest
-    container_name: build-zotero-client
-    build:
-      context: ./client
-      dockerfile: Dockerfile
-    volumes:
-      - ./client/zotero/:/zotero:rw
-    env_file: ./.env
-    environment:
-      - PLATFORM=l
-    network_mode: "host"
-    # More info: https://www.zotero.org/support/dev/client_coding/building_the_desktop_app
-
-  linux:
-    <<: *build-zotero-client
-    profiles: [client]
-    container_name: build-zotero-client-linux
-    environment:
-      - PLATFORM=l
-
-  windows:
-    <<: *build-zotero-client
-    profiles: [client]
-    container_name: build-zotero-client-windows
-    environment:
-      - PLATFORM=w
-
-  mac:
-    <<: *build-zotero-client
-    profiles: [client]
-    container_name: build-zotero-client-mac
-    environment:
-      - PLATFORM=m

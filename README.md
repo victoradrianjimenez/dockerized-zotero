@@ -42,6 +42,8 @@ Download souce code and configure the server:
 $ sudo docker compose up -d
 ```
 
+The source code is downloaded when the docker image is created. When creating a container, a copy of the container will be available in the _/dataserver/dataserver_ folder (a docker volume). To check and download a new version of the dataserver, it is necessary to use the above command with the _--build_ option.
+
 *Available endpoints*:
 
 | Name          | URL                                           |
@@ -65,7 +67,8 @@ $ sudo docker compose up -d
 
 Build Zotero Desktop App: 
 ```bash
-$ sudo docker compose --profile client up [linux|windows]
+$ cd client
+$ sudo docker compose up [linux|windows]
 ```
 
 The build will be placed in the _/client/zotero/app/staging_ folder in unpackaged form. The new files will be copied in this folder after finishing the compilation and closing zotero.
