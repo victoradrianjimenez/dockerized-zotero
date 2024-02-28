@@ -60,8 +60,8 @@ services:
     build:
       context: ./minio
     environment:
-      - MINIO_ACCESS_KEY=zotero
-      - MINIO_SECRET_KEY=zoterodocker
+      - MINIO_ROOT_USER=zotero
+      - MINIO_ROOT_PASSWORD=zoterodocker
     command: server /data
     restart: always
 
