@@ -70,12 +70,16 @@ services:
     container_name: zotero-stream-server
     build:
       context: ./stream-server
+    ports:
+      - ${WEBSOCKET_PORT}:8080
     volumes:
       - ./stream-server/config/default.js:/stream-server/config/default.js:ro
     depends_on:
       - zotero-redis
+      - zotero-dataserver
     links:
       - zotero-redis:redis
+      - zotero-dataserver:dataserver
     restart: always
 
   zotero-tinymce-clean-server:
@@ -107,7 +111,7 @@ services:
       - zotero-elasticsearch
       - zotero-redis
       - zotero-memcached
-      - zotero-stream-server
+      #- zotero-stream-server
       - zotero-tinymce-clean-server
     links:
       - zotero-mysql:mysql
@@ -116,7 +120,7 @@ services:
       - zotero-memcached:memcached
       - zotero-localstack:localstack
       - zotero-minio:minio
-      - zotero-stream-server:stream-server
+      #- zotero-stream-server:stream-server
       - zotero-tinymce-clean-server:tinymce-clean-server
     restart: always
 
