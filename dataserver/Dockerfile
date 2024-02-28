@@ -65,6 +65,9 @@ mkdir ~/.aws && \
 bash -c 'echo -e "[default]\nregion = us-east-1" > ~/.aws/config' && \
 bash -c 'echo -e "[default]\naws_access_key_id = zotero\naws_secret_access_key = zoterodocker" > ~/.aws/credentials'
 
+# Chown log directory
+RUN chown 33:33 /var/log/apache2
+
 # Rinetd
 RUN echo "0.0.0.0		8082		minio		9000" >> /etc/rinetd.conf
 
