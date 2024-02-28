@@ -5,7 +5,7 @@ var config = {
 	dev: false,
 	logLevel: 'info',
 	hostname: os.hostname().split('.')[0],
-	httpPort: 81,
+	httpPort: 8080,
 	proxyProtocol: false,
 	https: false,
 	trustedProxies: [],
@@ -17,7 +17,7 @@ var config = {
 		host: 'redis',
 		prefix: ''
 	},
-	apiURL: 'http://127.0.0.1/',
+	apiURL: 'http://dataserver/',
 	apiVersion: 3,
 	apiRequestHeaders: {},
 	longStackTraces: false,
