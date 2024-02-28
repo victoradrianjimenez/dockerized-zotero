@@ -10,7 +10,7 @@ export APACHE_LOG_DIR=/var/log/apache2
 
 ROOT_DIR=/var/www/zotero
 
-cp -r -f /zotero/{.,}* "$ROOT_DIR/"
+cp -r -f /zotero/* "$ROOT_DIR/"
 
 # Start log
 # /etc/init.d/rsyslog start
