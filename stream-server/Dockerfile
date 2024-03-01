@@ -10,6 +10,4 @@ WORKDIR /stream-server
 RUN git clone "https://github.com/zotero/stream-server.git" .
 RUN npm install --quiet
 
-EXPOSE 81
-
 CMD ["nodejs", "index.js"]

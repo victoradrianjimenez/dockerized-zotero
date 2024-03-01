@@ -5,7 +5,7 @@ var config = {
 	dev: false,
 	logLevel: 'info',
 	hostname: os.hostname().split('.')[0],
-	httpPort: 8080,
+	httpPort: 80,
 	proxyProtocol: false,
 	https: false,
 	trustedProxies: [],

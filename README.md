@@ -49,8 +49,15 @@ The source code is downloaded when the docker image is created. When creating a 
 | Name          | URL                                           |
 | ------------- | --------------------------------------------- |
 | Zotero API    | http://localhost:8080                         |
-| S3 Web UI     | http://localhost:8082                         |
-| PHPMyAdmin    | http://localhost:8083                         |
+| S3 Web UI     | http://localhost:9000                         |
+| PHPMyAdmin    | http://localhost:3000                         |
+
+*Data location*:
+
+| Name            | URL                                           |
+| --------------- | --------------------------------------------- |
+| MySQL Database  | /mysql/data                                   |
+| S3 File Storage | /minio/data                                   |
 
 *Default login/password*:
 

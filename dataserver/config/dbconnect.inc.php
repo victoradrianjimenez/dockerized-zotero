@@ -1,5 +1,5 @@
 <?
-function Zotero_dbConnectAuth($db) {
+function Zotero_DBConnectAuth($db) {
 	$charset = '';
 	if ($db == 'master') {
 		$host = 'mysql';
