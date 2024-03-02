@@ -46,11 +46,13 @@ The source code is downloaded when the docker image is created. When creating a 
 
 *Available endpoints*:
 
-| Name          | URL                                           |
-| ------------- | --------------------------------------------- |
-| Zotero API    | http://localhost:8080                         |
-| S3 Web UI     | http://localhost:9000                         |
-| PHPMyAdmin    | http://localhost:3000                         |
+| Name          | URL                    | Login    | Password      |
+| ------------- | ---------------------- |--------- | ------------- |
+| Zotero API    | http://localhost:8080  | admin    |  admin        |
+| Stream Server | http://localhost:8081  | -        |  -            |
+| S3 API        | http://localhost:8082  | -        |  -            |
+| PHPMyAdmin    | http://localhost:3000  | root     |  zotero       |
+| S3 Web UI     | http://localhost:4000  | zotero   |  zoterodocker |
 
 *Data location*:
 
@@ -58,15 +60,6 @@ The source code is downloaded when the docker image is created. When creating a 
 | --------------- | --------------------------------------------- |
 | MySQL Database  | /mysql/data                                   |
 | S3 File Storage | /minio/data                                   |
-
-*Default login/password*:
-
-| Name          | Login                    | Password           |
-| ------------- | ------------------------ | ------------------ |
-| Zotero API    | admin                    | admin              |
-| S3 Web UI     | zotero                   | zoterodocker       |
-| PHPMyAdmin    | root                     | zotero             |
-
 
 ## Zotero Client 
 

@@ -19,9 +19,9 @@ class Z_CONFIG {
 	public static $API_SUPER_PASSWORD = '';  // leave empty
 	
 	public static $AWS_REGION = ''; // leave empty
-	public static $AWS_ACCESS_KEY = ''; // // leave empty
-	public static $AWS_SECRET_KEY = ''; // // leave empty
-	public static $S3_ENDPOINT = 'http://minio:9000';
+	public static $AWS_ACCESS_KEY = ''; // leave empty
+	public static $AWS_SECRET_KEY = ''; // leave empty
+	public static $S3_ENDPOINT = ''; // leave empty
 	public static $S3_BUCKET = 'zotero';
 	public static $S3_BUCKET_CACHE = '';
 	public static $S3_BUCKET_FULLTEXT = 'zotero-fulltext';

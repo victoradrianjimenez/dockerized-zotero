@@ -72,12 +72,16 @@ rm -r -f /zf1
 
 # Adapt zotero code to work on localhost
 RUN \
-sed -i "s#s3.amazonaws.com#minio:9000#g" ./include/Zend/Service/Amazon/S3.php && \
+sed -i "s#'s3.amazonaws.com'#Z_CONFIG::\$S3_ENDPOINT#g" ./include/Zend/Service/Amazon/S3.php && \
+sed -i "s#'http://'.self::S3_ENDPOINT#self::S3_ENDPOINT#g" ./include/Zend/Service/Amazon/S3.php && \
 sed -i 's#"https://" . Z_CONFIG::\$S3_BUCKET . ".s3.amazonaws.com/"#Z_CONFIG::\$S3_ENDPOINT . "/" . Z_CONFIG::\$S3_BUCKET . "/"#g' ./model/Storage.inc.php && \
 sed -i "s#\$awsConfig = \[#\$awsConfig = \['endpoint' => Z_CONFIG::\$S3_ENDPOINT,'scheme' => 'http',#g" ./include/header.inc.php 
 
 # Install dependencies
 RUN composer install
+
+RUN ln -sf /dev/stdout /var/log/apache2/access.log && \
+    ln -sf /dev/stderr /var/log/apache2/error.log
 
 # Set the entrypoint file
 COPY ./entrypoint.sh ./scripts/create-user.sh /
