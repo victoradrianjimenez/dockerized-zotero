@@ -42,7 +42,7 @@ Download souce code and configure the server:
 $ sudo docker compose up -d
 ```
 
-The source code is downloaded when the docker image is created. When creating a container, a copy of the container will be available in the _/dataserver/dataserver_ folder (a docker volume). To check and download a new version of the dataserver, it is necessary to use the above command with the _--build_ option.
+The source code is downloaded when the docker image is created. To upgrade and download a new version of the dataserver, it is necessary to use the above command with the _--build_ option.
 
 *Available endpoints*:
 
@@ -50,7 +50,7 @@ The source code is downloaded when the docker image is created. When creating a 
 | ------------- | ---------------------- |--------- | ------------- |
 | Zotero API    | http://localhost:8080  | admin    |  admin        |
 | Stream Server | http://localhost:8081  | -        |  -            |
-| S3 API        | http://localhost:8082  | -        |  -            |
+| S3 API        | http://localhost:9000  | -        |  -            |
 | PHPMyAdmin    | http://localhost:3000  | root     |  zotero       |
 | S3 Web UI     | http://localhost:4000  | zotero   |  zoterodocker |
 
@@ -60,6 +60,7 @@ The source code is downloaded when the docker image is created. When creating a 
 | --------------- | --------------------------------------------- |
 | MySQL Database  | /mysql/data                                   |
 | S3 File Storage | /minio/data                                   |
+| Redis Dumps     | /redis/data                                   |
 
 ## Zotero Client 
 
