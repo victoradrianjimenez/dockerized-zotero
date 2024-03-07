@@ -111,6 +111,8 @@ services:
     volumes:
       - ./dataserver/config/config.inc.php:/var/www/zotero/include/config/config.inc.php-template:ro
       - ./dataserver/config/dbconnect.inc.php:/var/www/zotero/include/config/dbconnect.inc.php-template:ro
+    environment:
+      - MYSQL_PWD=${MYSQL_ROOT_PASSWORD}
     env_file:
       - .env
     depends_on:
