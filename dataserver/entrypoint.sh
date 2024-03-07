@@ -9,12 +9,18 @@ export APACHE_RUN_DIR=/var/run/apache2
 export APACHE_LOG_DIR=/var/log/apache2
 
 ROOT_DIR=/var/www/zotero
-SERVER_URI=$DATA_SERVER_PROTOCOL://$DATA_SERVER_HOST:$DATA_SERVER_PORT/
-S3_URI=$S3_SERVER_PROTOCOL://$S3_SERVER_HOST:$S3_SERVER_PORT
+if [ $SERVER_SECURE_PROTOCOL -eq 0 ]; then
+	SERVER_URI=http://$SERVER_HOST:$DATA_SERVER_PORT/
+	S3_URI=http://$SERVER_HOST:$S3_SERVER_PORT
+else
+	SERVER_URI=https://$SERVER_HOST:$DATA_SERVER_PORT/
+	S3_URI=https://$SERVER_HOST:$S3_SERVER_PORT
+fi
 
-cp -r -f /zotero/* "$ROOT_DIR/"
 chmod 777 "$ROOT_DIR/tmp"
 cd "$ROOT_DIR"
+cp ./include/config/config.inc.php-template ./include/config/config.inc.php
+cp ./include/config/dbconnect.inc.php-template ./include/config/dbconnect.inc.php
 
 sed -i "s#\$BASE_URI = ''#\$BASE_URI = '$SERVER_URI'#g" ./include/config/config.inc.php
 sed -i "s#\$API_BASE_URI = ''#\$API_BASE_URI = '$SERVER_URI'#g" ./include/config/config.inc.php
@@ -29,9 +35,15 @@ sed -i "s#\$AWS_REGION = ''#\$AWS_REGION = '$AWS_DEFAULT_REGION'#g" ./include/co
 sed -i "s#\$AWS_ACCESS_KEY = ''#\$AWS_ACCESS_KEY = '$AWS_ACCESS_KEY_ID'#g" ./include/config/config.inc.php
 sed -i "s#\$AWS_SECRET_KEY = ''#\$AWS_SECRET_KEY = '$AWS_SECRET_ACCESS_KEY'#g" ./include/config/config.inc.php
 
-aws --endpoint-url "http://minio:9000" s3 mb s3://zotero
-aws --endpoint-url "http://minio:9000" s3 mb s3://zotero-fulltext
+sed -i "s#\$pass = ''#\$pass = '$MYSQL_ROOT_PASSWORD'#g" ./include/config/dbconnect.inc.php
+
+aws --endpoint-url "http://minio:$S3_SERVER_PORT" s3 mb s3://zotero
+aws --endpoint-url "http://minio:$S3_SERVER_PORT" s3 mb s3://zotero-fulltext
 aws --endpoint-url "http://localstack:4575" sns create-topic --name zotero
+
+# Start rinetd
+echo "0.0.0.0		$S3_SERVER_PORT		minio		$S3_SERVER_PORT" > /etc/rinetd.conf
+/etc/init.d/rinetd start
 
 # Start Apache2
 exec apache2 -DNO_DETACH -k start

@@ -11,7 +11,7 @@ apt-get -y dist-upgrade && \
 apt-get -y install software-properties-common && \
 add-apt-repository ppa:ondrej/php && \
 apt-get update && \
-apt-get -y install apache2 libapache2-mod-php8.3 composer mysql-client git\
+apt-get -y install apache2 libapache2-mod-php8.3 composer mysql-client rinetd git\
  php8.3-dev php8.3-xml php8.3-mbstring php8.3-mysql php8.3-memcached php8.3-curl php8.3-redis\
  libmemcached11 libmemcachedutil2 libmemcached-dev zlib1g-dev
 
@@ -61,32 +61,27 @@ rm awscliv2.zip
 # Chown log directory
 RUN chown 33:33 /var/log/apache2
 
-WORKDIR /zotero
+WORKDIR /var/www/zotero
 
 # Get the last version of the zotero code
 RUN \
-git clone https://github.com/zotero/dataserver.git . && \
+git clone --recursive https://github.com/zotero/dataserver.git . && \
 git clone https://github.com/zendframework/zf1.git /zf1 && \
 mv -f /zf1/library/Zend/* ./include/Zend && \
 rm -r -f /zf1
+
+# Install dependencies
+RUN composer install
 
 # Adapt zotero code to work on localhost
 RUN \
 sed -i "s#'s3.amazonaws.com'#Z_CONFIG::\$S3_ENDPOINT#g" ./include/Zend/Service/Amazon/S3.php && \
 sed -i "s#'http://'.self::S3_ENDPOINT#self::S3_ENDPOINT#g" ./include/Zend/Service/Amazon/S3.php && \
+sed -i "s#parent::__construct(\$args)#\$args\['use_path_style_endpoint'\] = true;parent::__construct(\$args)#g" ./vendor/aws/aws-sdk-php/src/S3/S3Client.php && \
 sed -i 's#"https://" . Z_CONFIG::\$S3_BUCKET . ".s3.amazonaws.com/"#Z_CONFIG::\$S3_ENDPOINT . "/" . Z_CONFIG::\$S3_BUCKET . "/"#g' ./model/Storage.inc.php && \
 sed -i "s#\$awsConfig = \[#\$awsConfig = \['endpoint' => Z_CONFIG::\$S3_ENDPOINT,'scheme' => 'http',#g" ./include/header.inc.php 
-
-# Install dependencies
-RUN composer install
-
-RUN ln -sf /dev/stdout /var/log/apache2/access.log && \
-    ln -sf /dev/stderr /var/log/apache2/error.log
 
 # Set the entrypoint file
 COPY ./entrypoint.sh ./scripts/create-user.sh /
 RUN chmod +x /entrypoint.sh /create-user.sh
 ENTRYPOINT ["/entrypoint.sh"]
-
-
-

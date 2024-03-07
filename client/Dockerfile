@@ -8,7 +8,7 @@ apk add --no-cache --upgrade grep
 
 COPY ./entrypoint.sh /
 RUN chmod +x /entrypoint.sh
-RUN git clone --recursive https://github.com/zotero/zotero app
+RUN git clone --recursive https://github.com/zotero/zotero
 
 ENTRYPOINT ["/bin/bash", "-c", "/entrypoint.sh"]
 

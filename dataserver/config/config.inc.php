@@ -63,7 +63,7 @@ class Z_CONFIG {
 	
 	public static $GLOBAL_ITEMS_URL = '';
 	
-	public static $ATTACHMENT_PROXY_URL = "";  // new: https://files.example.com/
+	public static $ATTACHMENT_PROXY_URL = "https://files.example.com/";  // new
 	public static $ATTACHMENT_PROXY_SECRET = "";  // new
 
 	public static $STATSD_ENABLED = false;
@@ -83,7 +83,6 @@ class Z_CONFIG {
 	public static $CLI_PHP_PATH = '/usr/bin/php';
 	
 	// Alternative to S3_BUCKET_ERRORS
-	//public static $SYNC_ERROR_PATH = '/var/log/apache2/';  // old
 	public static $ERROR_PATH = '/var/log/apache2/';  // new
 	
 	public static $CACHE_VERSION_ATOM_ENTRY = 1;

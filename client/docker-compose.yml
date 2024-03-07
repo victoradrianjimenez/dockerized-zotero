@@ -9,7 +9,7 @@ services:
       context: .
       dockerfile: Dockerfile
     volumes:
-      - ./zotero/:/zotero:rw
+      - ./staging/:/staging:rw
     env_file: ../.env
     environment:
       - PLATFORM=l
@@ -22,7 +22,7 @@ services:
       context: .
       dockerfile: Dockerfile
     volumes:
-      - ./zotero/:/zotero:rw
+      - ./staging/:/staging:rw
     env_file: ../.env
     environment:
       - PLATFORM=w
@@ -35,7 +35,7 @@ services:
       context: .
       dockerfile: Dockerfile
     volumes:
-      - ./zotero/:/zotero:rw
+      - ./staging/:/staging:rw
     env_file: ../.env
     environment:
       - PLATFORM=m

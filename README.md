@@ -71,7 +71,7 @@ $ cd client
 $ sudo docker compose up [linux|windows]
 ```
 
-The build will be placed in the _/client/zotero/app/staging_ folder in unpackaged form. The new files will be copied in this folder after finishing the compilation and closing zotero.
+The build will be placed in the _/client/staging_ folder in unpackaged form. The new files will be copied in this folder after finishing the compilation and closing zotero.
 
 The source code is downloaded when the docker image is created. It is compiled when the container is created. Therefore, to check and download a new version of zotero, it is necessary to use the above command with the _--build_ option to recreate the image and then compile in a new container.
 

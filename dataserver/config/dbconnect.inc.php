@@ -7,7 +7,7 @@ function Zotero_DBConnectAuth($db) {
 		// $replicas = [['host' => '']];  //new
 		$db = 'zotero_master';
 		$user = 'root';
-		$pass = 'zotero';
+		$pass = '';  // leave empty
 		// $state = 'up'; // 'up', 'readonly', 'down'
 	}
 	else if ($db == 'shard') {
@@ -15,35 +15,35 @@ function Zotero_DBConnectAuth($db) {
 		$port = 3306;
 		$db = 'zotero_shard_1';
 		$user = 'root';
-		$pass = 'zotero';
+		$pass = '';  // leave empty
 	}
 	else if ($db == 'id1') {
 		$host = 'mysql';
 		$port = 3306;
 		$db = 'zotero_ids';
 		$user = 'root';
-		$pass = 'zotero';
+		$pass = '';  // leave empty
 	}
 	else if ($db == 'id2') {
 		$host = 'mysql';
 		$port = 3306;
 		$db = 'zotero_ids';
 		$user = 'root';
-		$pass = 'zotero';
+		$pass = '';  // leave empty
 	}
 	else if ($db == 'www1') {
 		$host = 'mysql';
 		$port = 3306;
 		$db = 'zotero_www';
 		$user = 'root';
-		$pass = 'zotero';
+		$pass = '';  // leave empty
 	}
 	else if ($db == 'www2') {
 		$host = 'mysql';
 		$port = 3306;
 		$db = 'zotero_www';
 		$user = 'root';
-		$pass = 'zotero';
+		$pass = '';  // leave empty
 	}
 	else {
 		throw new Exception("Invalid db '$db'");

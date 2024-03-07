@@ -1,4 +1,4 @@
-client/zotero
-dataserver/dataserver
+client/staging
 minio/data
+redis/data
 .env
