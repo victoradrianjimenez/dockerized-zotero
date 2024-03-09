@@ -140,8 +140,8 @@ services:
     environment:
       - MYSQL_PWD=${MYSQL_ROOT_PASSWORD}
     volumes:
-      - ./dataserver/scripts/www.sql:/var/www/zotero/misc/www.sql:ro
-      - ./dataserver/scripts/init-mysql.sh:/init-mysql.sh
+      - ./dataserver/init/www.sql:/var/www/zotero/misc/www.sql:ro
+      - ./dataserver/init/init-mysql.sh:/init-mysql.sh
     env_file:
       - .env
     depends_on:

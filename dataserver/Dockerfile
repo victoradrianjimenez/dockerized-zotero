@@ -82,6 +82,6 @@ sed -i 's#"https://" . Z_CONFIG::\$S3_BUCKET . ".s3.amazonaws.com/"#Z_CONFIG::\$
 sed -i "s#\$awsConfig = \[#\$awsConfig = \['endpoint' => Z_CONFIG::\$S3_ENDPOINT,'scheme' => 'http',#g" ./include/header.inc.php 
 
 # Set the entrypoint file
-COPY ./entrypoint.sh ./scripts/create-user.sh /
-RUN chmod +x /entrypoint.sh /create-user.sh
+COPY ./entrypoint.sh ./scripts/* /
+RUN chmod +x /*.sh
 ENTRYPOINT ["/entrypoint.sh"]
