@@ -92,11 +92,36 @@ $ ./staging/Zotero_VERSION/zotero(.exe)
 ![Sync](./doc/sync.png)
 
 
-### Create new user
+### Usefull commands
 
-*Run*:
+*Create new users*:
 ```bash
-$ sudo docker exec zotero-dataserver /create-user.sh [USERNAME] [EMAIL] [PASSWORD] 
+$ sudo docker exec zotero-dataserver /create-user.sh [USER_NAME] [EMAIL] [PASSWORD] 
 ```
 
-You can add, edit and delete users with PhpMyAdmin accessing to http://localhost:3000.
+*List users*:
+```bash
+$ sudo docker exec zotero-dataserver /list-users.sh
+```
+
+*Create shared group libraries*:
+```bash
+$ sudo docker exec zotero-dataserver /create-group.sh [OWNER_USER_NAME] [GROUP_NAME] "[GROUP_FULLNAME]" 
+```
+
+*List groups*:
+```bash
+$ sudo docker exec zotero-dataserver /list-groups.sh
+```
+
+*Add users to a group*:
+```bash
+$ sudo docker exec zotero-dataserver /add-user-group.sh [USER_NAME] [GROUP_NAME]
+```
+
+*Remove users from a group*:
+```bash
+$ sudo docker exec zotero-dataserver /remove-user-group.sh [USER_NAME] [GROUP_NAME]
+```
+
+You can add, edit and delete users and groups with PhpMyAdmin accessing to http://localhost:3000.
