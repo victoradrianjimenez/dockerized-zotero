@@ -96,7 +96,7 @@ $ ./staging/Zotero_VERSION/zotero(.exe)
 
 *Run*:
 ```bash
-$ sudo docker exec zotero-dataserver /create-user.sh [ID] [USERNAME] [PASSWORD] [EMAIL]
+$ sudo docker exec zotero-dataserver /create-user.sh [USERNAME] [EMAIL] [PASSWORD] 
 ```
 
-The ID is a unique integer number that Zotero uses internally to identify the user. You can add, edit and delete users with PhpMyAdmin accessing to http://localhost:3000.
+You can add, edit and delete users with PhpMyAdmin accessing to http://localhost:3000.
