@@ -45,5 +45,8 @@ aws --endpoint-url "http://localstack:4575" sns create-topic --name zotero
 echo "0.0.0.0		$S3_SERVER_PORT		minio		$S3_SERVER_PORT" > /etc/rinetd.conf
 /etc/init.d/rinetd start
 
+# Upgrade database
+/init-mysql.sh
+
 # Start Apache2
 exec apache2 -DNO_DETACH -k start

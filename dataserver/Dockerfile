@@ -81,7 +81,10 @@ sed -i "s#parent::__construct(\$args)#\$args\['use_path_style_endpoint'\] = true
 sed -i 's#"https://" . Z_CONFIG::\$S3_BUCKET . ".s3.amazonaws.com/"#Z_CONFIG::\$S3_ENDPOINT . "/" . Z_CONFIG::\$S3_BUCKET . "/"#g' ./model/Storage.inc.php && \
 sed -i "s#\$awsConfig = \[#\$awsConfig = \['endpoint' => Z_CONFIG::\$S3_ENDPOINT,'scheme' => 'http',#g" ./include/header.inc.php 
 
+# copy files
+COPY ./init/www.sql /var/www/zotero/misc/www.sql
+
 # Set the entrypoint file
-COPY ./entrypoint.sh ./scripts/* /
+COPY ./entrypoint.sh ./init/init-mysql.sh ./scripts/* /
 RUN chmod +x /*.sh
 ENTRYPOINT ["/entrypoint.sh"]

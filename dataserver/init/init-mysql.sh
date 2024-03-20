@@ -2,17 +2,9 @@
 MYSQL='mysql -h mysql -P 3306 -u root'
 SCRIPTS_DIR='/var/www/zotero/misc'
 
+if [ $(echo "SELECT COUNT(*) FROM INFORMATION_SCHEMA.SCHEMATA WHERE SCHEMA_NAME = 'zotero_master'" | $MYSQL -s -N) -eq 0 ]; then
 echo "DROP DATABASE IF EXISTS zotero_master" | $MYSQL
-echo "DROP DATABASE IF EXISTS zotero_shard_1" | $MYSQL
-echo "DROP DATABASE IF EXISTS zotero_shard_2" | $MYSQL
-echo "DROP DATABASE IF EXISTS zotero_ids" | $MYSQL
-echo "DROP DATABASE IF EXISTS zotero_www" | $MYSQL
-
 echo "CREATE DATABASE zotero_master" | $MYSQL
-echo "CREATE DATABASE zotero_shard_1" | $MYSQL
-echo "CREATE DATABASE zotero_shard_2" | $MYSQL
-echo "CREATE DATABASE zotero_ids" | $MYSQL
-echo "CREATE DATABASE zotero_www" | $MYSQL
 
 # Load in master schema
 $MYSQL zotero_master < $SCRIPTS_DIR/master.sql
@@ -30,6 +22,45 @@ echo "INSERT INTO libraries (libraryID, libraryType, shardID) VALUES (2, 'group'
 echo "INSERT INTO users (userID, libraryID, username) VALUES (1, 1, 'admin')" | $MYSQL zotero_master
 echo "INSERT INTO \`groups\`(groupID, libraryID, name, slug, libraryEditing, libraryReading, fileEditing, description, url) VALUES (1, 2, 'Shared', 'shared', 'admins', 'all', 'members', '', '') " | $MYSQL zotero_master
 echo "INSERT INTO groupUsers (groupID, userID, role) VALUES (1, 1, 'owner')" | $MYSQL zotero_master
+fi
+
+
+if [ $(echo "SELECT COUNT(*) FROM INFORMATION_SCHEMA.SCHEMATA WHERE SCHEMA_NAME = 'zotero_shard_1'" | $MYSQL -s -N) -eq 0 ]; then
+echo "DROP DATABASE IF EXISTS zotero_shard_1" | $MYSQL
+echo "CREATE DATABASE zotero_shard_1" | $MYSQL
+
+# Load in shard schema
+cat /var/www/zotero/misc/shard.sql | $MYSQL zotero_shard_1
+cat /var/www/zotero/misc/triggers.sql | $MYSQL zotero_shard_1
+
+echo "INSERT INTO shardLibraries (libraryID, libraryType) VALUES (1, 'user')" | $MYSQL zotero_shard_1
+fi
+
+
+if [ $(echo "SELECT COUNT(*) FROM INFORMATION_SCHEMA.SCHEMATA WHERE SCHEMA_NAME = 'zotero_shard_2'" | $MYSQL -s -N) -eq 0 ]; then
+echo "DROP DATABASE IF EXISTS zotero_shard_2" | $MYSQL
+echo "CREATE DATABASE zotero_shard_2" | $MYSQL
+
+# Load in shard schema
+cat /var/www/zotero/misc/shard.sql | $MYSQL zotero_shard_2
+cat /var/www/zotero/misc/triggers.sql | $MYSQL zotero_shard_2
+
+echo "INSERT INTO shardLibraries (libraryID, libraryType) VALUES (2, 'group')" | $MYSQL zotero_shard_2
+fi
+
+
+if [ $(echo "SELECT COUNT(*) FROM INFORMATION_SCHEMA.SCHEMATA WHERE SCHEMA_NAME = 'zotero_ids'" | $MYSQL -s -N) -eq 0 ]; then
+echo "DROP DATABASE IF EXISTS zotero_ids" | $MYSQL
+echo "CREATE DATABASE zotero_ids" | $MYSQL
+
+# Load in schema on id servers
+$MYSQL zotero_ids < /var/www/zotero/misc/ids.sql
+fi
+
+
+if [ $(echo "SELECT COUNT(*) FROM INFORMATION_SCHEMA.SCHEMATA WHERE SCHEMA_NAME = 'zotero_www'" | $MYSQL -s -N) -eq 0 ]; then
+echo "DROP DATABASE IF EXISTS zotero_www" | $MYSQL
+echo "CREATE DATABASE zotero_www" | $MYSQL
 
 # Load in www schema
 $MYSQL zotero_www < $SCRIPTS_DIR/www.sql
@@ -38,18 +69,13 @@ echo "INSERT INTO users (userID, username, password) VALUES (1, 'admin', MD5('ad
 echo "INSERT INTO users_email (userID, email) VALUES (1, 'admin@zotero.org')" | $MYSQL zotero_www
 echo "INSERT INTO storage_institutions (institutionID, domain, storageQuota) VALUES (1, 'zotero.org', 10000)" | $MYSQL zotero_www
 echo "INSERT INTO storage_institution_email (institutionID, email) VALUES (1, 'contact@zotero.org')" | $MYSQL zotero_www
+fi
 
-# Load in shard schema
-cat /var/www/zotero/misc/shard.sql | $MYSQL zotero_shard_1
-cat /var/www/zotero/misc/triggers.sql | $MYSQL zotero_shard_1
-cat /var/www/zotero/misc/shard.sql | $MYSQL zotero_shard_2
-cat /var/www/zotero/misc/triggers.sql | $MYSQL zotero_shard_2
 
-echo "INSERT INTO shardLibraries (libraryID, libraryType) VALUES (1, 'user')" | $MYSQL zotero_shard_1
-echo "INSERT INTO shardLibraries (libraryID, libraryType) VALUES (2, 'group')" | $MYSQL zotero_shard_2
+# Run schema updates
+cd /var/www/zotero/admin
+./schema_update
 
-# Load in schema on id servers
-$MYSQL zotero_ids < /var/www/zotero/misc/ids.sql
 
 # Master my.cnf:
 #
